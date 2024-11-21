@@ -12,6 +12,7 @@ from datetime import datetime
 
 import requests
 from eval.evaluate import evaluate
+from eval.evaluate import get_scores
 from tqdm import tqdm
 from utils.data_loader import load_data
 from utils.parser import *
