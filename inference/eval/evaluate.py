@@ -19,7 +19,7 @@ def get_scores(remain_codes, remain_gts):
     for i in range(len(remain_codes)):
         samples.append(
             {"gt": remain_gts[i],
-             "code": remain_codes[i]
+             "code": [remain_codes[i]]
             }
         )
     if 'idx' in samples[0]:
@@ -81,7 +81,7 @@ def get_scores(remain_codes, remain_gts):
         if len(s) < max_len:
             score_mat[i] = s + [s[-1]] * (max_len - len(s)) # pad
 
-    return [sam['score'] for sam in samples]
+    return [int(sam['score'][0]) for sam in samples]
     
 def evaluate(data_name, prompt_type, samples: list=None, file_path: str=None, max_num_samples=None, execute=False):
     assert samples or file_path, "samples or file_path must be provided"
