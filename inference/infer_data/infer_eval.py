@@ -219,6 +219,7 @@ def main(args):
         # process all outputs
         remain_prompts = []
         remain_codes = []
+        remain_gts = []
 
         for (i, query), output in zip(current_prompts, outputs):
             output = output.rstrip()
@@ -227,22 +228,30 @@ def main(args):
             if args.prompt_type == "cot":
                 # for cot, the prompt ends for one round
                 end_prompts.append((i, query))
-            elif "boxed" not in output and "```python" in output: #output.endswith("```"):
+            #elif "boxed" not in output and "```python" in output: #output.endswith("```"):
+            elif "ENDSIGNAL" not in query:
                 # the model does not output the final answer, meanwhile, a code needs to be executed
-                program = extract_program(query)
+                program = output
+                #extract_program(query)
                 remain_prompts.append((i, query))
                 remain_codes.append(program)
+                remain_gts.append(all_gts[i[)
             else:
                 end_prompts.append((i, query))
 
         # execute the codes and get the results
         # note that the order of remain_codes is the same as remain_prompts
-        remain_results = executor.batch_apply(remain_codes)
+        
+        
+        #remain_results = executor.batch_apply(remain_codes)
+        all_rm_scores = get_scores(remain_codes, remain_gts)
+        
         for k in range(len(remain_prompts)):
             i, query = remain_prompts[k]
-            res, report = remain_results[k]
-            exec_result = res if res else report
+            #res, report = remain_results[k]
+            #exec_result = res if res else report
             # we add the observation to the history
+            rm_score = all_rm_scores[k]
             if "gemma" in args.model_name_or_path:
                 exec_result = f"<end_of_turn>\n<start_of_turn>user\n```output\n{exec_result}\n```<end_of_turn>\n<start_of_turn>model\n"
             elif "mistral" in args.model_name_or_path:
@@ -252,12 +261,16 @@ def main(args):
                 #for deepseek, we directly append the observation as the training of deepseek
                 exec_result = f"\n```output\n{exec_result}\n```\n"
             elif "llama3" in args.model_name_or_path:
-                exec_result = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n```output\n{exec_result}\n```<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+                exec_result = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nReward score:{rm_score}\n1.Reflect on the most recent response, considering the reward score (ranging from 0 to 1, where 1 indicates a perfect response).
+\n2.Identify errors, inconsistencies, or incomplete reasoning in the latest CoT response. Be specific about what went wrong and propose concrete improvements.
+\n3.Generate a revised CoT response by addressing the identified issues while maintaining coherence with the problem statement and prior context.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
             else:
                 raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
-
-            query += exec_result
-
+            if rm_score:
+                query += exec_result
+            else:    
+                query = query + "ENDSIGNAL" + "<|eot_id|>"
+                
             if epoch == max_func_call - 1:
                 query += "\nReach max function call limit."
             remain_prompts[k] = (i, query)
@@ -274,6 +287,8 @@ def main(args):
         ans_split = "[/INST]"
     elif "deepseek" in args.model_name_or_path:
         ans_split = "\n\nAssistant:"
+    elif "llama3" in args.model_name_or_path:
+        ans_split = "<|start_header_id|>assistant<|end_header_id|>\n\n"
     else:
         raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
 
@@ -281,20 +296,20 @@ def main(args):
 
     # extract preds, run_execute will extract the code needed to run...
     # for tora, we only extract the final answer but do not run the code
-    results = [run_execute(executor, code, args.prompt_type) for code in codes]
+    results = [run_execute(executor, code, 'cot') for code in codes]
 
     time_use = time.time() - start_time
     tmp_to_store = [z.split("---")[-1].strip() for _, z in end_prompts]
     # put results back to examples
     all_samples = []
     for i, sample in enumerate(samples):
-        code = codes[i * args.n_sampling : (i + 1) * args.n_sampling]
+        #code = codes[i * args.n_sampling : (i + 1) * args.n_sampling]
         result = results[i * args.n_sampling : (i + 1) * args.n_sampling]
         preds = [item[0] for item in result]
-        reports = [item[1] for item in result]
+        #reports = [item[1] for item in result]
         response_tmp = tmp_to_store[i * args.n_sampling : (i + 1) * args.n_sampling]
         sample.pop("prompt")
-        sample.update({"my_solu": response_tmp, "code": code, "pred": preds, "report": reports})
+        sample.update({"my_solu": response_tmp, "pred": preds})
         all_samples.append(sample)
 
     # add processed samples
@@ -302,7 +317,7 @@ def main(args):
     save_jsonl(all_samples, out_file)
 
     # Evaluate the result
-    if args.eval:
+    if False:
         result_str = evaluate(samples=all_samples, data_name=args.data_name, prompt_type=args.prompt_type, execute=True)
         result_str += f"\nTime use: {time_use:.2f}s"
         time_str = f"{int(time_use // 60)}:{int(time_use % 60):02d}"
