@@ -236,7 +236,7 @@ def main(args):
                 #extract_program(query)
                 remain_prompts.append((i, query))
                 remain_codes.append(program)
-                remain_gts.append(all_gts[i[)
+                remain_gts.append(all_gts[i])
             else:
                 end_prompts.append((i, query))
 
