@@ -287,7 +287,7 @@ def main(args):
     elif "deepseek" in args.model_name_or_path:
         ans_split = "\n\nAssistant:"
     elif "llama3" in args.model_name_or_path:
-        ans_split = "<|start_header_id|>assistant<|end_header_id|>\n\n"
+        ans_split = "<|start_header_id|>user<|end_header_id|>\n\n"
     else:
         raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
 
