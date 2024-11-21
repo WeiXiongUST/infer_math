@@ -262,9 +262,7 @@ def main(args):
                 #for deepseek, we directly append the observation as the training of deepseek
                 exec_result = f"\n```output\n{exec_result}\n```\n"
             elif "llama3" in args.model_name_or_path:
-                exec_result = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nReward score:{rm_score}\n1.Reflect on the most recent response, considering the reward score (ranging from 0 to 1, where 1 indicates a perfect response).
-\n2.Identify errors, inconsistencies, or incomplete reasoning in the latest CoT response. Be specific about what went wrong and propose concrete improvements.
-\n3.Generate a revised CoT response by addressing the identified issues while maintaining coherence with the problem statement and prior context.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+                exec_result = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nReward score:{rm_score}\n1.Reflect on the most recent response, considering the reward score (ranging from 0 to 1, where 1 indicates a perfect response).\n2.Identify errors, inconsistencies, or incomplete reasoning in the latest CoT response. Be specific about what went wrong and propose concrete improvements.\n3.Generate a revised CoT response by addressing the identified issues while maintaining coherence with the problem statement and prior context.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
             else:
                 raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
             if rm_score:
