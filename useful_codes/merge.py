@@ -1,6 +1,6 @@
 # This script finds all the files ending with jsonl and merge them into one file 
 import os
-from datasets import load_dataset
+from datasets import load_dataset, Dataset, DatasetDict
 import json
 
 # The folders to load data
@@ -29,6 +29,7 @@ with open(output_dir, "w", encoding="utf8") as f:
      
 # You can also upload the dataset to the huggingface, which is particularly useful when collecting data with multiple machines
 """
+
 output_dir = "xxx"
 dict_data = {
     "idx": [d['idx'] for d in all_data],
