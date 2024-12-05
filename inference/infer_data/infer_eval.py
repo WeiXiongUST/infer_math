@@ -144,12 +144,14 @@ def main(args):
         idx = example["idx"]
 
         # parse question and answer
-        example["question"] = parse_question(example, args.data_name)
-        gt_cot, gt_ans = parse_ground_truth(example, args.data_name)
+        if args.data_name == 'math':
+            example["question"] = parse_question(example, args.data_name)
+            gt_cot, gt_ans = parse_ground_truth(example, args.data_name)
 
-        full_prompt = construct_prompt(args, example)
-
-        sample = {"idx": idx, "question": example["question"], "gt_cot": gt_cot, "gt": gt_ans, "prompt": full_prompt}
+            full_prompt = construct_prompt(args, example)
+        else:
+            full_prompt = example['my_prompt']
+        sample = {"idx": idx, "gt": gt_ans, "prompt": full_prompt}
         # add remain fields
         for key in [
             "level",
@@ -166,6 +168,8 @@ def main(args):
             "filed",
             "theorem",
             "answer",
+            "reflection",
+            "old_solu"
         ]:
             if key in example:
                 sample[key] = example[key]
@@ -266,9 +270,9 @@ def main(args):
             else:
                 raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
             if rm_score:
-                query += exec_result
-            else:    
-                query = query + "ENDSIGNAL" + "<|eot_id|>"
+                query = query + exec_result + "ENDSIGNAL"
+            else:
+                query = query + exec_result + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
                 
             if epoch == max_func_call - 1:
                 query += "\nReach max function call limit."
@@ -298,7 +302,7 @@ def main(args):
     results = [run_execute(executor, code, 'cot') for code in codes]
 
     time_use = time.time() - start_time
-    tmp_to_store = [z.split("---")[-1].strip() for _, z in end_prompts]
+    tmp_to_store = [z.strip() for _, z in end_prompts]
     # put results back to examples
     all_samples = []
     for i, sample in enumerate(samples):
@@ -307,7 +311,7 @@ def main(args):
         preds = [item[0] for item in result]
         #reports = [item[1] for item in result]
         response_tmp = tmp_to_store[i * args.n_sampling : (i + 1) * args.n_sampling]
-        sample.pop("prompt")
+        #sample.pop("prompt")
         sample.update({"my_solu": response_tmp, "pred": preds})
         all_samples.append(sample)
 
