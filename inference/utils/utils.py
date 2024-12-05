@@ -55,8 +55,7 @@ def construct_prompt(args, example):
         elif "deepseek" in args.model_name_or_path:
             full_prompt = f"User: {example['question']}\nPlease integrate natural language reasoning with programs to solve the problem above, and put your final answer within \\boxed{{}}.\n\nAssistant: "
         elif "llama3" in args.model_name_or_path:
-            full_prompt = f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nYou are a reasoning assistant tasked with solving math problems using chain-of-thought (CoT) reasoning. Your goal is to iteratively improve your responses based on feedback provided as a reward score (ranging from 0 to 1, where 1 indicates a perfect response). This process will repeat multiple times until the reasoning achieves a satisfactory reward score.\n\nProblem:\n{example['question']}\nPlease reason step by step, generate a complete CoT reasoning path, and put your final answer within \\boxed{{}}.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-        else:
+            full_prompt = f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n{example['question']}\nPlease reason step by step, and put your final answer within \\boxed{{}}.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"        else:
             raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
     elif args.prompt_type == "cot":
         if "gemma" in args.model_name_or_path:
@@ -66,8 +65,7 @@ def construct_prompt(args, example):
         elif "deepseek" in args.model_name_or_path:
             full_prompt = f"User: {example['question']}\nPlease reason step by step, and put your final answer within \\boxed{{}}.\n\nAssistant: "
         elif "llama3" in args.model_name_or_path:
-            full_prompt = f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nYou are a reasoning assistant tasked with solving math problems using chain-of-thought (CoT) reasoning. Your goal is to iteratively improve your responses based on feedback provided as a reward score (ranging from 0 to 1, where 1 indicates a perfect response). This process will repeat multiple times until the reasoning achieves a satisfactory reward score.\n\nProblem:\n{example['question']}\nPlease reason step by step, generate a complete CoT reasoning path, and put your final answer within \\boxed{{}}.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-        else:
+            full_prompt = f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n{example['question']}\nPlease reason step by step, and put your final answer within \\boxed{{}}.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"        else:
             raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
 
     return full_prompt
