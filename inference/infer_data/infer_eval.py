@@ -9,7 +9,7 @@ import random
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
-
+from datasets import load_dataset
 import requests
 from eval.evaluate import evaluate
 from eval.evaluate import get_scores
@@ -48,8 +48,12 @@ def parse_args():
 
 
 def prepare_data(args):
-    examples = load_data(args.data_name, args.split, args.data_dir)
-
+    if args.data_name in ['math', 'gsm8k']:
+        examples = load_data(args.data_name, args.split, args.data_dir)
+    else:
+        tmp = load_dataset(args.data_name, splie='train')
+        examples = = [z for z in tmp]
+        
     # sample `num_test_sample` from dataset
     if args.num_test_sample > 0:
         examples = random.sample(examples, args.num_test_sample)
