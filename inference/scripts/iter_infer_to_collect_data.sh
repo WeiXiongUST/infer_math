@@ -5,10 +5,10 @@ fi
 MODEL_NAME_OR_PATH=$1
 
 #DATA_NAME="math"
-DATA_NAME="gsm8k"
+DATA_NAME="math"
 OUTPUT_DIR="./iter_collect_data"
 
-SPLIT="train"
+SPLIT="test"
 PROMPT_TYPE="tora"
 NUM_TEST_SAMPLE=-1
 
@@ -22,13 +22,13 @@ python -um infer_data.infer_eval \
 --split ${SPLIT} \
 --prompt_type ${PROMPT_TYPE} \
 --num_test_sample ${NUM_TEST_SAMPLE} \
---seed 1 \
---temperature 0 \
+--seed ${i} \
+--temperature 1.0 \
 --n_sampling 1 \
 --top_p 1 \
 --start 0 \
 --end -1 \
---horizon 6 \
+--horizon 2 \
 --ports "8000" \
 --ports "8001" \
 --ports "8002" \
