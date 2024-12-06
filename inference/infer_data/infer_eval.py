@@ -52,7 +52,7 @@ def prepare_data(args):
         examples = load_data(args.data_name, args.split, args.data_dir)
     else:
         tmp = load_dataset(args.data_name, splie='train')
-        examples = = [z for z in tmp]
+        examples = [z for z in tmp]
         
     # sample `num_test_sample` from dataset
     if args.num_test_sample > 0:
@@ -270,7 +270,7 @@ def main(args):
                 #for deepseek, we directly append the observation as the training of deepseek
                 exec_result = f"\n```output\n{exec_result}\n```\n"
             elif "llama3" in args.model_name_or_path:
-                exec_result = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour most recent response received a reward score:{rm_score} (ranging from 0 to 1, where 0 indicates the final answer is incorrect, and 1 indicates a perfect response). Reflect on this feedback and improve your reasoning as follows:\n\n1.Reflection: Analyze the previous response based on the reward score. Identify specific errors, inconsistencies, or incomplete reasoning that led to the incorrect or suboptimal result.\n2.Improvement Plan: Clearly outline the issues found and propose concrete corrections or enhancements to the reasoning process.\n3. Revised Response: Generate a revised step by step reasoning path that addresses the identified issues while maintaining coherence and relevance to the original problem. Ensure the reasoning is logical and the conclusion aligns with the problem statement.\n4.Put your final answer within \\boxed{}."#"<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+                exec_result = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour most recent response received a reward score:{rm_score} (ranging from 0 to 1, where 0 indicates the final answer is incorrect, and 1 indicates a perfect response). Reflect on this feedback and improve your reasoning as follows:\n\n1.Reflection: Analyze the previous response based on the reward score. Identify specific errors, inconsistencies, or incomplete reasoning that led to the incorrect or suboptimal result.\n2.Improvement Plan: Clearly outline the issues found and propose concrete corrections or enhancements to the reasoning process.\n3. Revised Response: Generate a revised step by step reasoning path that addresses the identified issues while maintaining coherence and relevance to the original problem. Ensure the reasoning is logical and the conclusion aligns with the problem statement.\n4.Put your final answer within \\boxed{{}}."#"<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
             else:
                 raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
             if rm_score:
