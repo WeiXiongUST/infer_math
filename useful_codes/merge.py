@@ -24,22 +24,18 @@ output_eval_dataset["type"] = "text_only"
 output_eval_dataset["instances"] = all_data
 print("I collect ", len(all_data), "samples")
 
-with open(output_dir, "w", encoding="utf8") as f:
-    json.dump(output_eval_dataset, f, ensure_ascii=False)
+#with open(output_dir, "w", encoding="utf8") as f:
+#json.dump(output_eval_dataset, f, ensure_ascii=False)
      
-# You can also upload the dataset to the huggingface, which is particularly useful when collecting data with multiple machines
-"""
+
 
 output_dir = "xxx"
-dict_data = {
-    "idx": [d['idx'] for d in all_data],
-    "gt": [d['gt'] for d in all_data],
-    "level": [d['level'] for d in all_data],
-    "type": [d['type'] for d in all_data],
-    "my_solu": [d['my_solu'] for d in all_data],
-    "pred": [d['pred'] for d in all_data],
-}
+
+
+keys = all_data[0].keys()  
+
+dict_data = {key: [d[key] for d in all_data] for key in keys}
+
 
 dataset = Dataset.from_dict(dict_data)
 DatasetDict({'train': dataset}).push_to_hub(output_dir)
-"""
