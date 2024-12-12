@@ -245,7 +245,7 @@ def main(args):
                 remain_prompts.append((i, query))
                 #remain_codes.append(program)
                 remain_codes.append(program.split('Is my most recent final answer correct (Yes/No)?'))  
-              remain_gts.append(all_gts[i])
+                remain_gts.append(all_gts[i])
             else:
                 end_prompts.append((i, query))
 
@@ -318,7 +318,7 @@ def main(args):
         #sample.pop("prompt")
         #sample.update({"my_solu": response_tmp, "pred": preds})
         sample.update({"rewards": all_rm_scores[i], "my_solu": response_tmp})  
-      all_samples.append(sample)
+        all_samples.append(sample)
 
     # add processed samples
     all_samples.extend(processed_samples)
