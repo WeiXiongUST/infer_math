@@ -126,7 +126,7 @@ def main(args):
         "use_beam_search": False,
         "n": 1,
         "temperature": args.temperature,
-        "max_tokens": 1024,
+        "max_tokens": 2048,
         "seed": args.seed,
         "top_p": 1.0,
         "top_k": -1,
