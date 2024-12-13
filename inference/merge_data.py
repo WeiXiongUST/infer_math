@@ -17,12 +17,12 @@ class ScriptArguments:
     """
 
     base_path: Optional[str] = field(
-        default="/home/xiongwei/gshf/data/gen_data",
-        metadata={"help": "the location of the dataset name or path"},
+        default="",
+        metadata={"help": "the location dir of the output file"},
     )
     output_dir: Optional[str] = field(
         default="",
-        metadata={"help": "the location of the output file"},
+        metadata={"help": "the huggingface address of the dataset"},
     )
     num_datasets: Optional[int] = field(
         default=8,
@@ -45,9 +45,17 @@ for my_dir in all_dirs:
 
 random.shuffle(gathered_data)
 
-print("I collect ", len(gathered_data), "samples")
+all_data = gathered_data
 
-with open(script_args.output_dir, "w", encoding="utf8") as f:
-    for i in range(len(gathered_data)):
-        json.dump(gathered_data[i], f, ensure_ascii=False)
-        f.write('\n')
+output_dir = script_args.output_dir
+
+
+keys = all_data[0].keys()  
+
+dict_data = {key: [d[key] for d in all_data] for key in keys}
+
+
+dataset = Dataset.from_dict(dict_data)
+DatasetDict({'train': dataset}).push_to_hub(output_dir)
+
+
