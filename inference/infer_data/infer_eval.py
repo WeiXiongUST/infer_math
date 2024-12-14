@@ -51,7 +51,12 @@ def prepare_data(args):
     if args.data_name in ['math', 'gsm8k']:
         examples = load_data(args.data_name, args.split, args.data_dir)
     else:
-        tmp = load_dataset(args.data_name, splie='train')
+        tmp = load_dataset(args.data_name, split='train')
+        tmp = tmp.remove_columns('idx')
+        def add_index(example, index):
+            example['idx'] = index
+            return example
+        tmp = tmp.map(add_index, with_indices=True)
         examples = [z for z in tmp]
         
     # sample `num_test_sample` from dataset
