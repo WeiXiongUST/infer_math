@@ -244,7 +244,7 @@ def main(args):
                 #extract_program(query)
                 remain_prompts.append((i, query))
                 #remain_codes.append(program)
-                remain_codes.append(program.split('Is my most recent final answer correct (Yes/No)?'))  
+                remain_codes.append(program.split('Is my most recent final answer correct (Yes or No)?'))  
                 remain_gts.append(all_gts[i])
             else:
                 end_prompts.append((i, query))
