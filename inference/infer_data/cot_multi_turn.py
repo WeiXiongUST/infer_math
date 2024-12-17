@@ -153,9 +153,11 @@ def main(args):
             gt_cot, gt_ans = parse_ground_truth(example, args.data_name)
 
             full_prompt = construct_prompt(args, example)
+            sample = {"idx": idx, "gt": gt_ans, "prompt": full_prompt}
         else:
             full_prompt = example['my_prompt']
-        sample = {"idx": idx, "gt": gt_ans, "prompt": full_prompt}
+            sample = {"idx": idx, "gt": example['gt'], "prompt": full_prompt}
+        
         # add remain fields
         for key in [
             "level",
@@ -244,7 +246,7 @@ def main(args):
                 #extract_program(query)
                 remain_prompts.append((i, query))
                 #remain_codes.append(program)
-                remain_codes.append(program.split('Is my most recent final answer correct (Yes or No)?'))  
+                remain_codes.append(program.split('Is my most recent final answer correct'))  
                 remain_gts.append(all_gts[i])
             else:
                 end_prompts.append((i, query))
@@ -274,7 +276,7 @@ def main(args):
             else:
                 raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
             if rm_score:
-                query = query + exec_result + "ENDSIGNAL"
+                query = query + "<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour most recent response is correct. Thanks." + "ENDSIGNAL"
             else:
                 query = query + exec_result + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
                 
