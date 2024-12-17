@@ -1,6 +1,6 @@
 MODEL_NAME_OR_PATH=llama3
 
-BASE_DIR=XXX
+BASE_DIR=self_cor/infer_math_inference
 OUTPUT_BASE_DIR=1231czx/xx
 DATA_NAME="math"
 SPLIT="test"
@@ -34,7 +34,7 @@ python -um infer_data.cot_multi_turn \
 --ports "8006" \
 --ports "8007" 
 done
-python ./useful_codes/merge_data_script.py --base_path ${BASE_DIR}/model_test_tmp10/llama3/math --output_dir ${OUTPUT_BASE_DIR}tmp10
+python ../useful_codes/merge_data_script.py --base_path ${BASE_DIR}/model_test_tmp10/llama3/math --output_dir ${OUTPUT_BASE_DIR}tmp10
 
 OUTPUT_DIR="./model_test_tmp07"
 for ((i=0; i<=2; i+=1))
@@ -64,7 +64,7 @@ python -um infer_data.cot_multi_turn \
 --ports "8007" 
 done
 
-python ./useful_codes/merge_data_script.py --base_path ${BASE_DIR}/model_test_tmp07/llama3/math --output_dir ${OUTPUT_BASE_DIR}tmp07
+python ../useful_codes/merge_data_script.py --base_path ${BASE_DIR}/model_test_tmp07/llama3/math --output_dir ${OUTPUT_BASE_DIR}tmp07
 
 
 OUTPUT_DIR="./model_test_tmp0"
@@ -95,5 +95,5 @@ python -um infer_data.cot_multi_turn \
 --ports "8007" 
 done
 
-python ./useful_codes/merge_data_script.py --base_path ${BASE_DIR}/model_test_tmp0/llama3/math --output_dir ${OUTPUT_BASE_DIR}tmp0
+python ../useful_codes/merge_data_script.py --base_path ${BASE_DIR}/model_test_tmp0/llama3/math --output_dir ${OUTPUT_BASE_DIR}tmp0
 
