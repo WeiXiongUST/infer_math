@@ -11,7 +11,7 @@ OUTPUT_DIR="./model_test_tmp10"
 for ((i=0; i<=2; i+=1))
 do
 CUDA_VISIBLE_DEVICES=0 TOKENIZERS_PARALLELISM=false \
-python -um infer_data.cot_multi_turn \
+python -um infer_data.infer_test \
 --model_name_or_path ${MODEL_NAME_OR_PATH} \
 --data_name ${DATA_NAME} \
 --output_dir ${OUTPUT_DIR} \
@@ -40,7 +40,7 @@ OUTPUT_DIR="./model_test_tmp07"
 for ((i=0; i<=2; i+=1))
 do
 CUDA_VISIBLE_DEVICES=0 TOKENIZERS_PARALLELISM=false \
-python -um infer_data.cot_multi_turn \
+python -um infer_data.infer_test \
 --model_name_or_path ${MODEL_NAME_OR_PATH} \
 --data_name ${DATA_NAME} \
 --output_dir ${OUTPUT_DIR} \
@@ -71,7 +71,7 @@ OUTPUT_DIR="./model_test_tmp0"
 for ((i=0; i<=0; i+=1))
 do
 CUDA_VISIBLE_DEVICES=0 TOKENIZERS_PARALLELISM=false \
-python -um infer_data.cot_multi_turn \
+python -um infer_data.infer_test \
 --model_name_or_path ${MODEL_NAME_OR_PATH} \
 --data_name ${DATA_NAME} \
 --output_dir ${OUTPUT_DIR} \
