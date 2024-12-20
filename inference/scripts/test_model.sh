@@ -1,3 +1,5 @@
+bash scripts/register_server.sh xx
+sleep 300
 MODEL_NAME_OR_PATH=llama3
 
 BASE_DIR=self_cor/infer_math_inference
