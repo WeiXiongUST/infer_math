@@ -54,7 +54,7 @@ keys = all_data[0].keys()
 
 dict_data = {key: [d[key] for d in all_data] for key in keys}
 
-
+from datasets import Dataset, DatasetDict 
 dataset = Dataset.from_dict(dict_data)
 DatasetDict({'train': dataset}).push_to_hub(output_dir)
 
