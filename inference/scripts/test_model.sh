@@ -13,7 +13,7 @@ OUTPUT_DIR="./model_test_tmp10"
 for ((i=0; i<=2; i+=1))
 do
 CUDA_VISIBLE_DEVICES=0 TOKENIZERS_PARALLELISM=false \
-python -um infer_data.infer_test \
+python -um infer_data.new_infer_test \
 --model_name_or_path ${MODEL_NAME_OR_PATH} \
 --data_name ${DATA_NAME} \
 --output_dir ${OUTPUT_DIR} \
@@ -26,7 +26,7 @@ python -um infer_data.infer_test \
 --top_p 1 \
 --start 0 \
 --end -1 \
---horizon 2 \
+--horizon 3 \
 --ports "8000" \
 --ports "8001" \
 --ports "8002" \
@@ -42,7 +42,7 @@ OUTPUT_DIR="./model_test_tmp07"
 for ((i=0; i<=2; i+=1))
 do
 CUDA_VISIBLE_DEVICES=0 TOKENIZERS_PARALLELISM=false \
-python -um infer_data.infer_test \
+python -um infer_data.new_infer_test \
 --model_name_or_path ${MODEL_NAME_OR_PATH} \
 --data_name ${DATA_NAME} \
 --output_dir ${OUTPUT_DIR} \
@@ -55,7 +55,7 @@ python -um infer_data.infer_test \
 --top_p 1 \
 --start 0 \
 --end -1 \
---horizon 2 \
+--horizon 3 \
 --ports "8000" \
 --ports "8001" \
 --ports "8002" \
@@ -73,7 +73,7 @@ OUTPUT_DIR="./model_test_tmp0"
 for ((i=0; i<=0; i+=1))
 do
 CUDA_VISIBLE_DEVICES=0 TOKENIZERS_PARALLELISM=false \
-python -um infer_data.infer_test \
+python -um infer_data.new_infer_test \
 --model_name_or_path ${MODEL_NAME_OR_PATH} \
 --data_name ${DATA_NAME} \
 --output_dir ${OUTPUT_DIR} \
@@ -86,7 +86,7 @@ python -um infer_data.infer_test \
 --top_p 1 \
 --start 0 \
 --end -1 \
---horizon 2 \
+--horizon 3 \
 --ports "8000" \
 --ports "8001" \
 --ports "8002" \
