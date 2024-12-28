@@ -77,6 +77,7 @@ all_data = []
 for i, sample in enumerate(all_samples):
     sample.update({"rewards": all_rm_scores[i]})
     all_data.append(sample)
+output_dir = script_args.output_dir
 
 keys = all_data[0].keys()  
 
