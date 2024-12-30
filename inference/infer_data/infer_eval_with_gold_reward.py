@@ -124,7 +124,7 @@ def main(args):
     elif "deepseek" in args.model_name_or_path:
         stop_tokens = ["<｜end▁of▁sentence｜>", "User", "```output"]
     elif "llama3" in args.model_name_or_path:
-        stop_tokens = ["<|eot_id|>", "<|start_header_id|>user", "\n\nIs my"]
+        stop_tokens = ["<|eot_id|>", "<|start_header_id|>user", "```output"]
     else:
         raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
     default_args = {
@@ -158,9 +158,10 @@ def main(args):
             gt_cot, gt_ans = parse_ground_truth(example, args.data_name)
 
             full_prompt = construct_prompt(args, example)
+            sample = {"idx": idx, "gt": gt_ans, "prompt": full_prompt}
         else:
             full_prompt = example['my_prompt']
-        sample = {"idx": idx, "gt": gt_ans, "prompt": full_prompt}
+            sample = {"idx": idx, "gt": example['gt'], "prompt": full_prompt}
         # add remain fields
         for key in [
             "level",
@@ -275,14 +276,22 @@ def main(args):
                 #for deepseek, we directly append the observation as the training of deepseek
                 exec_result = f"\n```output\n{exec_result}\n```\n"
             elif "llama3" in args.model_name_or_path:
-                exec_result = " \n\nIs my most recent final answer correct (Yes/No)? No. Now I will reflect on this feedback and improve my reasoning as follows:\n\n1.Reflection: Analyze the previous response based on the feedback. Identify specific errors, inconsistencies, or incomplete reasoning that led to the incorrect or suboptimal result.\n2.Improvement Plan: Clearly outline the issues found and propose concrete corrections or enhancements to the reasoning process.\n3. Revised Response: Generate a revised step by step reasoning path that addresses the identified issues while maintaining coherence and relevance to the original problem. Ensure the reasoning is logical and the conclusion aligns with the problem statement.\n4.Put the final answer within \\boxed{}.\n\n"
+                #exec_result = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour most recent response received a reward score:{rm_score} (ranging from 0 to 1, where 0 indicates the final answer is incorrect, and 1 indicates a perfect response). Reflect on this feedback and improve your reasoning as follows:\n\n1.Reflection: Analyze the previous response based on the reward score. Identify specific errors, inconsistencies, or incomplete reasoning that led to the incorrect or suboptimal result.\n2.Improvement Plan: Clearly outline the issues found and propose concrete corrections or enhancements to the reasoning process.\n3. Revised Response: Generate a revised step by step reasoning path that addresses the identified issues while maintaining coherence and relevance to the original problem. Ensure the reasoning is logical and the conclusion aligns with the problem statement.\n4.Put your final answer within \\boxed{{}}."#"<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+                exec_result1 = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour initial response is evaluated as incorrect, there might be an error in the solution above because of lack of understanding of the question. Please correct the error, if any, and rewrite the solution. Put your final answer within \\boxed{{}}."
+                #exec_result2 = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour initial response is evaluated as correct. Re-check the initial response for any errors or incomplete reasoning, even if the evaluation suggests it is correct. If you find any issues, explicitly correct them. If the response is indeed correct and complete, confirm it and provide no further modifications. Put your final answer within \\boxed{{}}."
+
+                #new_exec_result1 = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour initial response is evaluated as incorrect. There might be an error in the solution above because of lack of understanding of the question. Please correct the error, if any, and rewrite the solution. Put your final answer within \\boxed{{}}."
+                #new_exec_result2 = f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour initial response is evaluated as correct. Confirm it and provide no further modifications. Put your final answer within \\boxed{{}}."
+    
             else:
                 raise NotImplementedError(args.prompt_type + "and " + args.model_name_or_path)
+            #if '(Yes or No)? Yes' in query:
             if rm_score:
-                query = query  + "The answer is correct. Thanks. ENDSIGNAL"
+                #query = query + exec_result2 + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+                query = query + "<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYour most recent response is evaluated as correct, no further modification is required. Thanks." + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
             else:
-                query = query + exec_result #+ "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-                
+                query = query + exec_result1 + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+
             if epoch == max_func_call - 1:
                 query += "\nReach max function call limit."
             remain_prompts[k] = (i, query)
@@ -310,8 +319,21 @@ def main(args):
     # for tora, we only extract the final answer but do not run the code
     results = [run_execute(executor, code, 'cot') for code in codes]
 
+    from eval.evaluate import get_batch_scores
+
     time_use = time.time() - start_time
     tmp_to_store = [z.strip() for _, z in end_prompts]
+
+    def get_code(txt):
+        tmp1 = txt.split("<|eot_id|><|start_header_id|>assistant<|end_header_id|>")[1].split("<|eot_id|><|start_header_id|>user<|end_header_id|>")[0]
+        tmp2 = txt.split("<|eot_id|><|start_header_id|>assistant<|end_header_id|>")[2].split("<|eot_id|><|start_header_id|>user<|end_header_id|>")[0]
+        return [tmp1, tmp2]
+    f_codes = [get_code(z) for z in tmp_to_store]
+    print(f_codes[0])
+    print(f_codes[1])
+    f_gts = [sample['gt'] for sample in samples]
+    all_rm_scores = get_batch_scores(f_codes, f_gts)
+
     # put results back to examples
     all_samples = []
     for i, sample in enumerate(samples):
@@ -321,8 +343,9 @@ def main(args):
         #reports = [item[1] for item in result]
         response_tmp = tmp_to_store[i * args.n_sampling : (i + 1) * args.n_sampling]
         #sample.pop("prompt")
-        sample.update({"my_solu": response_tmp, "pred": preds})
+        sample.update({"my_solu": response_tmp, "pred": preds, "rewards": all_rm_scores[i]})
         all_samples.append(sample)
+
 
     # add processed samples
     all_samples.extend(processed_samples)
