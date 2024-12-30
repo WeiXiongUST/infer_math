@@ -312,6 +312,17 @@ def main(args):
 
     time_use = time.time() - start_time
     tmp_to_store = [z.strip() for _, z in end_prompts]
+
+    def get_code(txt):
+        tmp1 = txt.split("<|eot_id|><|start_header_id|>assistant<|end_header_id|>")[1].split("<|eot_id|><|start_header_id|>user<|end_header_id|>")[0]
+        tmp2 = txt.split("<|eot_id|><|start_header_id|>assistant<|end_header_id|>")[2].split("<|eot_id|><|start_header_id|>user<|end_header_id|>")[0]
+        return [tmp1, tmp2]
+    f_codes = [get_code(z) for z in tmp_to_store]
+    print(f_codes[0])
+    print(f_codes[1])
+    f_gts = [sample['gt'] for sample in samples]
+    all_rm_scores = get_batch_scores(f_codes, f_gts)
+
     # put results back to examples
     all_samples = []
     for i, sample in enumerate(samples):
@@ -321,7 +332,7 @@ def main(args):
         #reports = [item[1] for item in result]
         response_tmp = tmp_to_store[i * args.n_sampling : (i + 1) * args.n_sampling]
         #sample.pop("prompt")
-        sample.update({"my_solu": response_tmp, "pred": preds})
+        sample.update({"my_solu": response_tmp, "pred": preds, "rewards": all_rm_scores[i]})
         all_samples.append(sample)
 
     # add processed samples
