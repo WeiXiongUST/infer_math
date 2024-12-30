@@ -26,7 +26,7 @@ python -um infer_data.infer_test \
 --top_p 1 \
 --start 0 \
 --end -1 \
---horizon 3 \
+--horizon 2 \
 --ports "8000" \
 --ports "8001" \
 --ports "8002" \
@@ -55,7 +55,7 @@ python -um infer_data.infer_test \
 --top_p 1 \
 --start 0 \
 --end -1 \
---horizon 3 \
+--horizon 2 \
 --ports "8000" \
 --ports "8001" \
 --ports "8002" \
@@ -86,7 +86,7 @@ python -um infer_data.infer_test \
 --top_p 1 \
 --start 0 \
 --end -1 \
---horizon 3 \
+--horizon 2 \
 --ports "8000" \
 --ports "8001" \
 --ports "8002" \
