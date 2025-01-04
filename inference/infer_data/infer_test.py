@@ -153,7 +153,7 @@ def main(args):
         idx = example["idx"]
 
         # parse question and answer
-        if args.data_name == 'math':
+        if args.data_name in ['math', 'gsm8k']:
             example["question"] = parse_question(example, args.data_name)
             gt_cot, gt_ans = parse_ground_truth(example, args.data_name)
 
