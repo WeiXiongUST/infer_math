@@ -1,9 +1,9 @@
-bash scripts/register_server.sh xx
+bash scripts/register_server.sh HanningZhang/Llama3-w2r100k-r2r40k-r182k-2ep
 sleep 300
 MODEL_NAME_OR_PATH=llama3
 
-BASE_DIR=self_cor/infer_math_inference
-OUTPUT_BASE_DIR=1231czx/xx
+BASE_DIR=/home/wx13/infer_math/inference
+OUTPUT_BASE_DIR=weqweasdas/HanningZhang_Llama3-w2r100k-r2r40k-r182k-2ep_
 DATA_NAME="math"
 SPLIT="test"
 PROMPT_TYPE="tora"
