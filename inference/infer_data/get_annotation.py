@@ -67,7 +67,7 @@ remain_codes = []
 remain_gts = []
 all_samples = []
 for sample in ds:
-    remain_codes.append(sample['codes'])
+    remain_codes.append(sample['answers'])
     remain_gts.append(sample['gt'])
     all_samples.append(sample)
 all_rm_scores = get_batch_scores(remain_codes, remain_gts)
@@ -75,7 +75,7 @@ all_rm_scores = get_batch_scores(remain_codes, remain_gts)
 all_data = []
 
 for i, sample in enumerate(all_samples):
-    sample.update({"rewards": all_rm_scores[i]})
+    sample.update({"second_rewards": all_rm_scores[i]})
     all_data.append(sample)
 output_dir = script_args.output_dir
 
