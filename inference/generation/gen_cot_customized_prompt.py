@@ -98,16 +98,16 @@ sampling_params = SamplingParams(
 )
 
   
-ds = dataset = load_dataset("competition_math", split='train', name="main", trust_remote_code=True)
+ds = dataset = load_dataset("xxx", split='train')
 
 def get_prompt(example):
     #full_prompt = f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n{example['problem']}\nPlease reason step by step, and put your final answer within \\boxed{{}}.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"        
 
-    return {"prompt": example['my_prompt']}
+    #return {"prompt": full_prompt}
+    return {"prompt": exaple['my_prompt']}
     
-ds = ds.remove_columns(["prompt"])
-
 ds = ds.map(get_prompt)
+
 data_size = len(ds["prompt"])
 one_num_share = int(data_size / script_args.my_world_size)
 ds = ds.select(np.arange(script_args.local_index * one_num_share, (script_args.local_index + 1) * one_num_share))
@@ -125,7 +125,8 @@ completions = []
 used_prompts = []
 gathered_data = []
 for i, output in enumerate(outputs):
-    tmp_data = {"idx": ds[i]['idx'], "prompt": ds[i]['prompt'], "answers": [out.text for out in output.outputs], "first_round": ds[i]['first_round'], "gt": ds[i]['gt']}
+    tmp_data = {"idx": ds[i]['idx'], "prompt": ds[i]['prompt'], "answers": [out.text for out in output.outputs], "gt": ds[i]['gt'], 'proxy_label': ds[i]['proxy_reward'], 
+               "rewards": ds[i]['rewards']}
     gathered_data.append(tmp_data)
 
 
