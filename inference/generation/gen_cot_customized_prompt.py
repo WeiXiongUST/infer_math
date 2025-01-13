@@ -98,7 +98,7 @@ sampling_params = SamplingParams(
 )
 
   
-ds = dataset = load_dataset("xxx", split='train')
+ds = dataset = load_dataset(script_args.dataset_name_or_path, split='train')
 
 def get_prompt(example):
     #full_prompt = f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n{example['problem']}\nPlease reason step by step, and put your final answer within \\boxed{{}}.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"        
