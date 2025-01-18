@@ -70,6 +70,7 @@ class ScriptArguments:
 
 parser = HfArgumentParser(ScriptArguments)
 script_args = parser.parse_args_into_dataclasses()[0]
+ds_dir = script_args.dataset_name_or_path
 
 model_path = script_args.model_name_or_path
 print("model_path", model_path)
@@ -125,7 +126,7 @@ completions = []
 used_prompts = []
 gathered_data = []
 for i, output in enumerate(outputs):
-    tmp_data = {"idx": ds[i]['idx'], "prompt": ds[i]['prompt'], "answers": [out.text for out in output.outputs], "gt": ds[i]['gt'], 'proxy_label': ds[i]['proxy_reward']}
+    tmp_data = {"idx": ds[i]['idx'], "prompt": ds[i]['prompt'], "answers": [out.text for out in output.outputs], "rewards": ds[i]['rewards'], "gt": ds[i]['gt'], 'proxy_label': ds[i]['proxy_reward']}
     gathered_data.append(tmp_data)
 
 
