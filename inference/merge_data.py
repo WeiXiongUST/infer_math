@@ -17,7 +17,7 @@ class ScriptArguments:
     """
 
     base_path: Optional[str] = field(
-        default="",
+        default="./data/gen_data",
         metadata={"help": "the location dir of the output file"},
     )
     output_dir: Optional[str] = field(
