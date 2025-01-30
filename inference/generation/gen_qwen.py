@@ -100,7 +100,7 @@ sampling_params = SamplingParams(
   
 #ds = dataset = load_dataset("tmpmodelsave/qwen2_7b_it_math_turn1", split='train')#.select(range(100))
 #ds = ds.remove_columns(['answers'])
-ds = dataset = load_dataset("weqweasdas/rs_math_train", split='train')#.select(range(100))
+ds = dataset = load_dataset("weqweasdas/prompt_aug_math", split='train')#.select(range(100))
 
 def get_prompt(example):
     messages = [
@@ -112,7 +112,7 @@ def get_prompt(example):
 
 def get_prompt2(example):
     return {"prompt": example['my_prompt']}
-ds = ds.map(get_prompt2)
+ds = ds.map(get_prompt)
 
 data_size = len(ds["prompt"])
 one_num_share = int(data_size / script_args.my_world_size)
@@ -132,7 +132,7 @@ used_prompts = []
 gathered_data = []
 for i, output in enumerate(outputs):
     #tmp_data = {"idx": ds[i]['idx'], "prompt": ds[i]['prompt'], "answers": [out.text for out in output.outputs],  "gt": ds[i]['gt'], 'first_rewards': ds[i]['first_rewards']}
-    tmp_data = {"idx": ds[i]['idx'], "prompt": ds[i]['prompt'], "answers": [out.text for out in output.outputs],  "gt": ds[i]['gt']}
+    tmp_data = {"idx": i, "prompt": ds[i]['prompt'], "answers": [out.text for out in output.outputs],  "gt": ds[i]['expected_answer']}
     gathered_data.append(tmp_data)
 
 
